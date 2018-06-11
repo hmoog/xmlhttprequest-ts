@@ -29,6 +29,7 @@
                 "cmp-prefix2"
             ],
             "kebab-case"
-        ]
+        ],
+        "no-switch-case-fall-through": false
     }
 }
