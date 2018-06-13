@@ -1,6 +1,6 @@
-# XMLHttpRequest-ts #
+# xmlhttprequest-ts #
 
-XMLHttpRequest-ts is a typescript wrapper for the built-in http client to emulate the
+xmlhttprequest-ts is a typescript wrapper for the built-in http client to emulate the
 browser XMLHttpRequest object and allow isomorphic code that runs in the browser and in node.js.
 
 This can be used with JS designed for browsers to improve reuse of code and
@@ -41,7 +41,7 @@ MIT license. See LICENSE for full details.
 ## Known Issues / Missing Features ##
 
 For a list of open issues or to report your own visit the [github issues
-page](https://github.com/hmoog/XMLHttpRequest-ts/issues).
+page](https://github.com/hmoog/xmlhttprequest-ts/issues).
 
 * Local file access may have unexpected results for non-UTF8 files
 * Synchronous requests don't set headers properly

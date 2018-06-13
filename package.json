@@ -1,11 +1,11 @@
 {
-  "name": "XMLHttpRequest-ts",
+  "name": "xmlhttprequest-ts",
   "private": false,
   "version": "0.0.0-development",
-  "description": "XMLHttpRequest-ts is a typescript wrapper for the built-in http client to emulate the browser XMLHttpRequest object and allow isomorphic code that runs in the browser and in node.js.",
-  "main": "./bundles/XMLHttpRequest-ts.umd.js",
-  "module": "./esm5/XMLHttpRequest-ts.js",
-  "es2015": "./esm2015/XMLHttpRequest-ts.js",
+  "description": "xmlhttprequest-ts is a typescript wrapper for the built-in http client to emulate the browser XMLHttpRequest object and allow isomorphic code that runs in the browser and in node.js.",
+  "main": "./bundles/xmlhttprequest-ts.umd.js",
+  "module": "./esm5/xmlhttprequest-ts.js",
+  "es2015": "./esm2015/xmlhttprequest-ts.js",
   "scripts": {
     "build": "node build.js",
     "test": "karma start",
@@ -70,28 +70,28 @@
             "label": "NPM Package"
           },
           {
-            "path": "dist/bundles/XMLHttpRequest-ts.umd.js",
-            "label": "XMLHttpRequest-ts.umd.js"
+            "path": "dist/bundles/xmlhttprequest-ts.umd.js",
+            "label": "xmlhttprequest-ts.umd.js"
           },
           {
-            "path": "dist/bundles/XMLHttpRequest-ts.umd.min.js",
-            "label": "XMLHttpRequest-ts.umd.min.js"
+            "path": "dist/bundles/xmlhttprequest-ts.umd.min.js",
+            "label": "xmlhttprequest-ts.umd.min.js"
           }
         ]
       }
     ],
     "pkgRoot": "dist"
   },
-  "typings": "./XMLHttpRequest-ts.d.ts",
+  "typings": "./xmlhttprequest-ts.d.ts",
   "author": "",
   "repository": {
     "type": "git",
-    "url": "https://github.com/hmoog/XMLHttpRequest-ts.git"
+    "url": "https://github.com/hmoog/xmlhttprequest-ts.git"
   },
   "bugs": {
-    "url": "https://github.com/hmoog/XMLHttpRequest-ts/issues"
+    "url": "https://github.com/hmoog/xmlhttprequest-ts/issues"
   },
-  "homepage": "https://github.com/hmoog/XMLHttpRequest-ts",
+  "homepage": "https://github.com/hmoog/xmlhttprequest-ts",
   "keywords": [
     "angular",
     "javascript",
