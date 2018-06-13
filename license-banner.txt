@@ -1,4 +1,4 @@
 /**
- * @license XMLHttpRequest
+ * @license XMLHttpRequest-ts
  * MIT license
  */

@@ -60,6 +60,6 @@ export default {
         globals: globals,
         sourcemap: true,
         exports: 'named',
-        amd: { id: 'XMLHttpRequest' }
+        amd: { id: 'XMLHttpRequest-ts' }
     }
 }

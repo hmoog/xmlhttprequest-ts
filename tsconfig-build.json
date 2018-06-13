@@ -34,7 +34,7 @@
         "skipTemplateCodegen": true,
         "annotateForClosureCompiler": true,
         "strictMetadataEmit": true,
-        "flatModuleOutFile": "XMLHttpRequest.js",
-        "flatModuleId": "XMLHttpRequest"
+        "flatModuleOutFile": "XMLHttpRequest-ts.js",
+        "flatModuleId": "XMLHttpRequest-ts"
     }
 }

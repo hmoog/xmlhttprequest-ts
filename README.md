@@ -13,7 +13,7 @@ Ready for AOT and treeshaking in combination with Angular and other modern types
 Here's how to include the module in your project and use as the browser-based
 XHR object.
 
-    var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+    var XMLHttpRequest = require("xmlhttprequest-ts").XMLHttpRequest;
     var xhr = new XMLHttpRequest();
 
 Note: use the lowercase string "xmlhttprequest" in your require(). On
@@ -60,3 +60,4 @@ This is a typescript port of [this library](https://github.com/driverdan/node-XM
 * added timeout to requests
 * prevents redirect loops by throwing an error
 * prevents reset of headers upon abort
+* correctly supports all events

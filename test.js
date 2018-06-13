@@ -1,4 +1,4 @@
-const { XMLHttpRequest } = require('./dist/bundles/XMLHttpRequest.umd.min.js');
+const { XMLHttpRequest } = require('./dist/bundles/XMLHttpRequest-ts.umd.min.js');
 
 var xhr = new XMLHttpRequest();
 xhr.open('GET', 'http://google.com');
