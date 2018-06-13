@@ -10,13 +10,19 @@ Ready for AOT and treeshaking in combination with Angular and other modern types
 
 ## Usage ##
 
-Here's how to include the module in your project and use as the browser-based
-XHR object.
+Here's how to include the module in your project using the typescript method:
 
-    var XMLHttpRequest = require("xmlhttprequest-ts").XMLHttpRequest;
+    import { XMLHttpRequest } from 'xmlhttprequest-ts';
+
     var xhr = new XMLHttpRequest();
 
-Note: use the lowercase string "xmlhttprequest" in your require(). On
+Here's how to include the module in your project using the normal node.js method:
+
+    const { XMLHttpRequest } = require("xmlhttprequest-ts");
+
+    var xhr = new XMLHttpRequest();
+
+Note: use the lowercase string "xmlhttprequest-ts" in your require(). On
 case-sensitive systems (eg Linux) using uppercase letters won't work.
 
 ## Versions ##
