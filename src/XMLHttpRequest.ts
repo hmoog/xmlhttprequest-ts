@@ -723,35 +723,6 @@ export class XMLHttpRequest {
     }
 
     /**
-     * called when a timeout is encountered
-     */
-    public handleTimeout(error: Error) {
-        if(this.request) {
-            this.request.abort();
-            this.request = undefined;
-        }
-
-        this.status = 0;
-        this.statusText = error.toString();
-        this.responseText = error.stack || '';
-        this.errorFlag = true;
-        this.dispatchEvent('timeout', error);
-        this.setState(this.DONE);
-    }
-
-    /**
-     * called when an error is encountered
-     */
-    public handleError(error: Error) {
-        this.status = 0;
-        this.statusText = error.toString();
-        this.responseText = error.stack || '';
-        this.errorFlag = true;
-        this.dispatchEvent('error', error);
-        this.setState(this.DONE);
-    }
-
-    /**
      * aborts a request
      */
     public abort() {
@@ -821,6 +792,8 @@ export class XMLHttpRequest {
         }
     }
 
+    // private instance methods ////////////////////////////////////////////////////////////////////
+
     /**
      * changes readyState and calls onreadystatechange
      */
@@ -842,7 +815,34 @@ export class XMLHttpRequest {
         }
     }
 
-    // private instance methods ////////////////////////////////////////////////////////////////////
+    /**
+     * called when a timeout is encountered
+     */
+    private handleTimeout(error: Error) {
+        if(this.request) {
+            this.request.abort();
+            this.request = undefined;
+        }
+
+        this.status = 0;
+        this.statusText = error.toString();
+        this.responseText = error.stack || '';
+        this.errorFlag = true;
+        this.dispatchEvent('timeout', error);
+        this.setState(this.DONE);
+    }
+
+    /**
+     * called when an error is encountered
+     */
+    private handleError(error: Error) {
+        this.status = 0;
+        this.statusText = error.toString();
+        this.responseText = error.stack || '';
+        this.errorFlag = true;
+        this.dispatchEvent('error', error);
+        this.setState(this.DONE);
+    }
 
     /**
      * checks if the specified header is allowed
