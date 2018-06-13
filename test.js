@@ -1,14 +1,14 @@
 const { XMLHttpRequest } = require('./dist/bundles/XMLHttpRequest.umd.min.js');
 
 var xhr = new XMLHttpRequest();
-xhr.open('GET', 'http://studio.botoflegends.com', false);
-xhr.timeout = 100;
+xhr.open('GET', 'http://google.com');
+xhr.timeout = 10000;
 xhr.onreadystatechange = function() {
     if(xhr.readyState === XMLHttpRequest.DONE) {
         if(xhr.status === 0) {
             console.log('ERROR');
         } else {
-            console.log('SUCCESS');
+            console.log(xhr.responseText);
         }
     }
 }

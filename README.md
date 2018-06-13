@@ -1,203 +1,57 @@
-# XMLHttpRequest
+# node-XMLHttpRequest #
 
-Typescript library of crypto standards. Ready for AOT and treeshaking in combination with Angular and other modern typescript frameworks.
+XMLHttpRequest-ts is a typescript wrapper for the built-in http client to emulate the
+browser XMLHttpRequest object and allow isomorphic code that runs in the browser and in node.js.
 
-## Node.js (Install)
+This can be used with JS designed for browsers to improve reuse of code and
+allow the use of existing libraries.
 
-Requirements:
+Ready for AOT and treeshaking in combination with Angular and other modern typescript frameworks.
 
-- Node.js
-- npm (Node.js package manager)
+Note: This library currently conforms to the living standard of XMLHttpRequest in all modern browsers.
 
-```bash
-npm install XMLHttpRequest
-```
+## Usage ##
 
-### Usage
+Here's how to include the module in your project and use as the browser-based
+XHR object.
 
-ES6 import for typical API call signing use case:
+    var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+    var xhr = new XMLHttpRequest();
 
-```javascript
-import { AES } from 'XMLHttpRequest';
+Note: use the lowercase string "xmlhttprequest" in your require(). On
+case-sensitive systems (eg Linux) using uppercase letters won't work.
 
-const encryptedMessage = AES.encrypt('message', 'test').toString();
-```
+## Versions ##
 
-Modular include:
+Prior to 1.4.0 version numbers were arbitrary. From 1.4.0 on they conform to
+the standard major.minor.bugfix. 1.x shouldn't necessarily be considered
+stable just because it's above 0.x.
 
-```javascript
-var AES = require("XMLHttpRequest").AES;
-var SHA256 = require("XMLHttpRequest").SHA256;
-...
-console.log(SHA256("Message"));
-```
+Since the XMLHttpRequest API is stable this library's API is stable as
+well. Major version numbers indicate significant core code changes.
+Minor versions indicate minor core code changes or better conformity to
+the W3C spec.
 
-Including all libraries, for access to extra methods:
+## License ##
 
-```javascript
-var CryptoTS = require("XMLHttpRequest");
-...
-console.log(CryptoTS.HmacSHA1("Message", "Key"));
-```
+MIT license. See LICENSE for full details.
 
-## Client (browser)
+## Supports ##
 
-Requirements:
+* Async and synchronous requests
+* GET, POST, PUT, and DELETE requests
+* All spec methods (open, send, abort, getRequestHeader,
+  getAllRequestHeaders, event methods)
+* Requests to all domains
 
-- Node.js
-- Bower (package manager for frontend)
+## Known Issues / Missing Features ##
 
-```bash
-bower install XMLHttpRequest
-```
+For a list of open issues or to report your own visit the [github issues
+page](https://github.com/driverdan/node-XMLHttpRequest/issues).
 
-### Usage
-
-Modular include:
-
-```javascript
-require.config({
-    packages: [
-        {
-            name: 'XMLHttpRequest',
-            location: 'path-to/bower_components/XMLHttpRequest',
-            main: 'index'
-        }
-    ]
-});
-
-require(["XMLHttpRequest/algo/aes", "XMLHttpRequest/algo/sha256"], function (AES, SHA256) {
-    console.log(SHA256("Message"));
-});
-```
-
-Including all libraries, for access to extra methods:
-
-```javascript
-// Above-mentioned will work or use this simple form
-require.config({
-    paths: {
-        'XMLHttpRequest': 'path-to/bower_components/XMLHttpRequest/XMLHttpRequest'
-    }
-});
-
-require(["XMLHttpRequest"], function (CryptoTS) {
-    console.log(CryptoTS.MD5("Message"));
-});
-```
-
-### Usage without RequireJS
-
-```html
-<script type="text/javascript" src="path-to/bower_components/XMLHttpRequest/XMLHttpRequest.js"></script>
-<script type="text/javascript">
-    var encrypted = CryptoTS.AES(...);
-    var encrypted = CryptoTS.SHA256(...);
-</script>
-```
-
-### AES Encryption
-
-#### Plain text encryption
-
-```javascript
-var CryptoTS = require("XMLHttpRequest");
-
-// Encrypt
-var ciphertext = CryptoTS.AES.encrypt('my message', 'secret key 123');
-
-// Decrypt
-var bytes  = CryptoTS.AES.decrypt(ciphertext.toString(), 'secret key 123');
-var plaintext = bytes.toString(CryptoTS.enc.Utf8);
-
-console.log(plaintext);
-```
-
-#### Object encryption
-
-```javascript
-var CryptoTS = require("XMLHttpRequest");
-
-var data = [{id: 1}, {id: 2}]
-
-// Encrypt
-var ciphertext = CryptoTS.AES.encrypt(JSON.stringify(data), 'secret key 123');
-
-// Decrypt
-var bytes  = CryptoTS.AES.decrypt(ciphertext.toString(), 'secret key 123');
-var decryptedData = JSON.parse(bytes.toString(CryptoTS.enc.Utf8));
-
-console.log(decryptedData);
-```
-
-### List of modules
-
-
-- ```XMLHttpRequest/core```
-- ```XMLHttpRequest/x64-core```
-- ```XMLHttpRequest/lib-typedarrays```
-
----
-
-- ```XMLHttpRequest/md5```
-- ```XMLHttpRequest/sha1```
-- ```XMLHttpRequest/sha256```
-- ```XMLHttpRequest/sha224```
-- ```XMLHttpRequest/sha512```
-- ```XMLHttpRequest/sha384```
-- ```XMLHttpRequest/sha3```
-- ```XMLHttpRequest/ripemd160```
-
----
-
-- ```XMLHttpRequest/hmac-md5```
-- ```XMLHttpRequest/hmac-sha1```
-- ```XMLHttpRequest/hmac-sha256```
-- ```XMLHttpRequest/hmac-sha224```
-- ```XMLHttpRequest/hmac-sha512```
-- ```XMLHttpRequest/hmac-sha384```
-- ```XMLHttpRequest/hmac-sha3```
-- ```XMLHttpRequest/hmac-ripemd160```
-
----
-
-- ```XMLHttpRequest/pbkdf2```
-
----
-
-- ```XMLHttpRequest/aes```
-- ```XMLHttpRequest/tripledes```
-- ```XMLHttpRequest/rc4```
-- ```XMLHttpRequest/rabbit```
-- ```XMLHttpRequest/rabbit-legacy```
-- ```XMLHttpRequest/evpkdf```
-
----
-
-- ```XMLHttpRequest/format-openssl```
-- ```XMLHttpRequest/format-hex```
-
----
-
-- ```XMLHttpRequest/enc-latin1```
-- ```XMLHttpRequest/enc-utf8```
-- ```XMLHttpRequest/enc-hex```
-- ```XMLHttpRequest/enc-utf16```
-- ```XMLHttpRequest/enc-base64```
-
----
-
-- ```XMLHttpRequest/mode-cfb```
-- ```XMLHttpRequest/mode-ctr```
-- ```XMLHttpRequest/mode-ctr-gladman```
-- ```XMLHttpRequest/mode-ofb```
-- ```XMLHttpRequest/mode-ecb```
-
----
-
-- ```XMLHttpRequest/pad-pkcs7```
-- ```XMLHttpRequest/pad-ansix923```
-- ```XMLHttpRequest/pad-iso10126```
-- ```XMLHttpRequest/pad-iso97971```
-- ```XMLHttpRequest/pad-zeropadding```
-- ```XMLHttpRequest/pad-nopadding```
+* Local file access may have unexpected results for non-UTF8 files
+* Synchronous requests don't set headers properly
+* Synchronous requests freeze node while waiting for response (But that's what you want, right? Stick with async!).
+* Some events are missing, such as abort
+* Cookies aren't persisted between requests
+* Missing XML support

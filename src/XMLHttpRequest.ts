@@ -3,6 +3,8 @@ import * as fs from 'fs';
 import * as http from 'http';
 import * as https from 'https';
 import * as Url from 'url';
+import * as os from 'os';
+import * as path from 'path';
 import { ClientRequest, IncomingMessage } from 'http';
 import { spawn } from 'child_process';
 
@@ -237,6 +239,11 @@ export class XMLHttpRequest {
      */
     private settings?: XMLHttpRequestSettings;
 
+    /**
+     * stores the timer that is used for timeouts
+     */
+    timeoutTimer?: NodeJS.Timer;
+
     // public instance methods /////////////////////////////////////////////////////////////////////
 
     /**
@@ -434,7 +441,7 @@ export class XMLHttpRequest {
             }
 
             if(this.settings.async) {
-                fs.readFile(url.pathname || '/', 'utf8', function(error: any, fileData: string) {
+                fs.readFile(unescape(url.pathname || '/'), 'utf8', function(error: any, fileData: string) {
                     if(error) {
                         self.handleError(error);
                     } else {
@@ -445,7 +452,7 @@ export class XMLHttpRequest {
                 });
             } else {
                 try {
-                    this.responseText = fs.readFileSync(url.pathname || '/', 'utf8');
+                    this.responseText = fs.readFileSync(unescape(url.pathname || '/'), 'utf8');
                     this.status = 200;
                     this.setState(self.DONE);
                 } catch(e) {
@@ -525,7 +532,7 @@ export class XMLHttpRequest {
         if(this.settings.async) {
             // handle timeouts correctly
             if(this.timeout >= 1) {
-                setTimeout(() => {
+                this.timeoutTimer = setTimeout(() => {
                     if(this.readyState !== this.DONE) {
                         self.handleTimeout(new Error('request timed out after ' + this.timeout + 'ms'));
                     }
@@ -533,7 +540,7 @@ export class XMLHttpRequest {
             }
 
             // Use the proper protocol
-            const doRequest = ssl ? https.request : http.request;
+            let doRequest = ssl ? https.request : http.request;
 
             // Request is being sent, set send flag
             this.sendFlag = true;
@@ -580,6 +587,12 @@ export class XMLHttpRequest {
                     const parsedUrl = Url.parse(self.settings.url);
                     // Set host let in case it's used later
                     host = parsedUrl.hostname;
+
+                    // Set host parameter for header or redirect won't work
+                    if(host) {
+                        self.headers.Host = host;
+                    }
+
                     // Options for the new request
                     const newOptions = {
                         hostname: parsedUrl.hostname,
@@ -589,6 +602,11 @@ export class XMLHttpRequest {
                         headers: self.headers,
                         withCredentials: self.withCredentials
                     };
+
+                    // Update ssl and doRequest to be appropriate
+                    // For (potentially) new protocol
+                    ssl = (url.protocol === 'https:' ? true : false);
+                    doRequest = ssl ? https.request : http.request;
 
                     // Issue the new request
                     self.request = doRequest(newOptions, responseHandler).on('error', errorHandler);
@@ -642,8 +660,8 @@ export class XMLHttpRequest {
             const startTime = new Date().getTime();
 
             // Create a temporary file for communication with the other Node process
-            const contentFile = '.node-xmlhttprequest-content-' + process.pid;
-            const syncFile = '.node-xmlhttprequest-sync-' + process.pid;
+            const contentFile = os.tmpdir() + path.sep + 'ts-xmlhttprequest-content-' + process.pid;
+            const syncFile = os.tmpdir() + path.sep + 'ts-xmlhttprequest-sync-' + process.pid;
             fs.writeFileSync(syncFile, '', 'utf8');
 
             // The async request the other Node process executes
@@ -731,7 +749,7 @@ export class XMLHttpRequest {
             this.request = undefined;
         }
 
-        this.headers = this.defaultHeaders;
+        this.headers = {};
         this.status = 0;
         this.responseText = '';
         this.responseXML = null;
@@ -806,6 +824,11 @@ export class XMLHttpRequest {
             }
 
             if(this.readyState === this.DONE) {
+                if(this.timeoutTimer) {
+                    clearTimeout(this.timeoutTimer);
+                    this.timeoutTimer = undefined;
+                }
+
                 if(!this.errorFlag) {
                     this.dispatchEvent('load');
                 }
