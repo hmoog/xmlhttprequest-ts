@@ -51,7 +51,7 @@ page](https://github.com/hmoog/XMLHttpRequest-ts/issues).
 
 ## Fixed Issues ##
 
-This is a typescript port of the [this library](https://github.com/driverdan/node-XMLHttpRequest/) and the following issues were fixed:
+This is a typescript port of [this library](https://github.com/driverdan/node-XMLHttpRequest/) and the following issues were fixed:
 
 * writes the temp files to the temp folder with sync requests for compatibility with AWS Lambda
 * unescapes pathname from url when loading from local filesystem
