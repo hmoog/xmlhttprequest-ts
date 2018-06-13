@@ -86,6 +86,31 @@ export class XMLHttpRequest {
     public onreadystatechange?: () => any;
 
     /**
+     * an EventHandler that is called whenever an abort occurs
+     */
+    public onabort?: () => any;
+
+    /**
+     * an EventHandler that is called whenever an error occurs
+     */
+    public onerror?: (err: Error) => any;
+
+    /**
+     * an EventHandler that is called whenever a request loads successfully
+     */
+    public onload?: () => any;
+
+    /**
+     * an EventHandler that is called whenever a request starts to load
+     */
+    public onloadstart?: () => any;
+
+    /**
+     * an EventHandler that is called whenever a timeout occurs
+     */
+    public ontimeout?: (err: Error) => any;
+
+    /**
      * stores the ready state of the request (see UNSENT, OPENED, HEADERS_RECEIVED, LOADING, DONE)
      */
     public readyState = XMLHttpRequest.UNSENT;
@@ -109,6 +134,11 @@ export class XMLHttpRequest {
      * the text received from a server following a request being sent
      */
     public statusText = '';
+
+    /**
+     * timeout in milliseconds after a request should time out
+     */
+    public timeout = 0;
 
     /**
      * indicates whether or not cross-site Access-Control requests should be made using credentials like authorization headers
@@ -488,6 +518,15 @@ export class XMLHttpRequest {
 
         // Handle async requests
         if(this.settings.async) {
+            // handle timeouts correctly
+            if(this.timeout >= 1) {
+                setTimeout(() => {
+                    if(this.readyState !== this.DONE) {
+                        self.handleTimeout(new Error('request timed out after ' + this.timeout + 'ms'));
+                    }
+                }, this.timeout);
+            }
+
             // Use the proper protocol
             const doRequest = ssl ? https.request : http.request;
 
@@ -502,6 +541,8 @@ export class XMLHttpRequest {
                 self.handleError(error);
             };
 
+            let redirectCount = 0;
+
             // Handler for the response
             const responseHandler = function(resp: IncomingMessage) {
                 // Set response let to the response we got back
@@ -513,7 +554,6 @@ export class XMLHttpRequest {
                 }
 
                 // Check for redirect
-                // @TODO Prevent looped redirects
                 if(
                     self.response.headers.location && (
                         self.response.statusCode === 301 ||
@@ -522,6 +562,14 @@ export class XMLHttpRequest {
                         self.response.statusCode === 307
                     )
                 ) {
+                    // increase redirect count
+                    redirectCount++;
+
+                    // prevent looped redirects
+                    if(redirectCount >= 10) {
+                        throw new Error('XMLHttpRequest: Request failed - too many redirects');
+                    }
+
                     // Change URL to the redirect location
                     self.settings.url = self.response.headers.location;
                     const parsedUrl = Url.parse(self.settings.url);
@@ -540,6 +588,7 @@ export class XMLHttpRequest {
                     // Issue the new request
                     self.request = doRequest(newOptions, responseHandler).on('error', errorHandler);
                     self.request.end();
+
                     // @TODO Check if an XHR event needs to be fired here
                     return;
                 }
@@ -577,7 +626,7 @@ export class XMLHttpRequest {
             self.request = doRequest(options, responseHandler).on('error', errorHandler);
 
             // Node 0.4 and later won't accept empty data. Make sure it's needed.
-            if (data) {
+            if(data) {
                 self.request.write(data);
             }
 
@@ -585,6 +634,8 @@ export class XMLHttpRequest {
 
             self.dispatchEvent('loadstart');
         } else { // Synchronous
+            const startTime = new Date().getTime();
+
             // Create a temporary file for communication with the other Node process
             const contentFile = '.node-xmlhttprequest-content-' + process.pid;
             const syncFile = '.node-xmlhttprequest-sync-' + process.pid;
@@ -622,16 +673,35 @@ export class XMLHttpRequest {
                              + (data ? 'req.write(\'' + JSON.stringify(data).slice(1, -1).replace(/'/g, '\\\'') + '\');' : '')
                              + 'req.end();';
 
+            self.dispatchEvent('loadstart');
+            this.setState(self.LOADING);
+
             // Start the other Node Process, executing this string
             const syncProc = spawn(process.argv[0], ['-e', execString]);
-            while(fs.existsSync(syncFile)) {
-                // Wait while the sync file is empty
-            }
 
-            const resp = JSON.parse(fs.readFileSync(contentFile, 'utf8'));
+            // since this method will run syncronized - this callback always get's called after everything is done
+            syncProc.on('exit', function (code, signal) {
+                // clean up the temp files
+                try { fs.unlinkSync(syncFile); } catch(e) {}
+                try { fs.unlinkSync(contentFile); } catch(e) {}
+            });
+
+            while(fs.existsSync(syncFile)) {
+                if(this.timeout !== 0 && new Date().getTime() >= startTime + this.timeout) {
+                    // kill the process when we face an error
+                    syncProc.stdin.end();
+                    syncProc.kill();
+
+                    // handle the timeout error
+                    return self.handleTimeout(new Error('request timed out after ' + this.timeout + 'ms'));
+                }
+            }
 
             // Kill the child process once the file has data
             syncProc.stdin.end();
+            syncProc.kill();
+
+            const resp = JSON.parse(fs.readFileSync(contentFile, 'utf8'));
 
             // Remove the temporary file
             fs.unlinkSync(contentFile);
@@ -648,15 +718,32 @@ export class XMLHttpRequest {
     }
 
     /**
+     * called when a timeout is encountered
+     */
+    public handleTimeout(error: Error) {
+        if(this.request) {
+            this.request.abort();
+            this.request = undefined;
+        }
+
+        this.status = 0;
+        this.statusText = error.toString();
+        this.responseText = error.stack || '';
+        this.errorFlag = true;
+        this.dispatchEvent('timeout', error);
+        this.setState(this.DONE);
+    }
+
+    /**
      * called when an error is encountered
      */
-    public handleError(error: any) {
+    public handleError(error: Error) {
         this.status = 0;
-        this.statusText = error;
-        this.responseText = error.stack;
+        this.statusText = error.toString();
+        this.responseText = error.stack || '';
         this.errorFlag = true;
+        this.dispatchEvent('error', error);
         this.setState(this.DONE);
-        this.dispatchEvent('error');
     }
 
     /**
@@ -716,14 +803,15 @@ export class XMLHttpRequest {
     /**
      * dispatches events, including the "on" methods and events attached using addEventListener
      */
-    public dispatchEvent(event: string) {
-        if(event === 'readystatechange' && typeof this.onreadystatechange === 'function') {
-            this.onreadystatechange();
+    public dispatchEvent(event: string, parameter?: any) {
+        const eventHandlerMethodName: string = 'on' + event;
+        if(typeof (<any> this)[eventHandlerMethodName] === 'function') {
+            (<any> this)[eventHandlerMethodName](parameter);
         }
 
         if(event in this.listeners) {
             for(let i = 0, len = this.listeners[event].length; i < len; i++) {
-                this.listeners[event][i].call(this);
+                this.listeners[event][i].call(this, parameter);
             }
         }
     }
