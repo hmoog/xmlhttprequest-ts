@@ -12,8 +12,9 @@ xhr.onreadystatechange = function() {
         }
     }
 }
-xhr.onloadstart = function() {
+xhr.ontimeout = function(timeout) {
     console.log('TIMEOUT');
+    console.log(timeout);
 }
 xhr.onerror = function(e) {
     console.log(e);

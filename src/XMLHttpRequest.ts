@@ -101,6 +101,11 @@ export class XMLHttpRequest {
     public onload?: () => any;
 
     /**
+     * an EventHandler that is called whenever a request finished
+     */
+    public onloadend?: () => any;
+
+    /**
      * an EventHandler that is called whenever a request starts to load
      */
     public onloadstart?: () => any;
@@ -827,10 +832,11 @@ export class XMLHttpRequest {
                 this.dispatchEvent('readystatechange');
             }
 
-            if(this.readyState === this.DONE && !this.errorFlag) {
-                this.dispatchEvent('load');
+            if(this.readyState === this.DONE) {
+                if(!this.errorFlag) {
+                    this.dispatchEvent('load');
+                }
 
-                // @TODO figure out InspectorInstrumentation::didLoadXHR(cookie)
                 this.dispatchEvent('loadend');
             }
         }
