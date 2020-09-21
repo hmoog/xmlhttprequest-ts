@@ -102,10 +102,6 @@
   "dependencies": {
     "tslib": "^1.9.2"
   },
-  "peerDependencies": {
-    "@angular/common": ">= 5.0.0",
-    "@angular/core": ">= 5.0.0"
-  },
   "devDependencies": {
     "@angular/animations": "6.0.4",
     "@angular/common": "6.0.4",
